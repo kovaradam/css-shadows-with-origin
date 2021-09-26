@@ -28,10 +28,8 @@ const Button = styled.button<{ dimensions: number[]; isDragged: boolean }>`
   border: 1px solid pink;
   width: ${({ dimensions }): number => dimensions[0]}px;
   height: ${({ dimensions }): number => dimensions[1]}px;
-  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 3px 1px black;
-  background-color: ${({ isDragged }): string => (isDragged ? '#f1f1f184' : 'white')};
+  background-color: ${({ isDragged }): string => (isDragged ? '#f1f1f184s' : 'white')};
 `;

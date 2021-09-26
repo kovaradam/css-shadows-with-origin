@@ -23,5 +23,5 @@ const Button = styled.button<{ isDragged: boolean }>`
   justify-content: center;
   align-items: center;
   box-shadow: 0 0 20px 1px #efef01;
-  background-color: ${({ isDragged }): string => (isDragged ? '#f1f1f184' : 'white')};
+  background-color: ${({ isDragged }): string => (isDragged ? '#f1f1f184s' : 'white')};
 `;
