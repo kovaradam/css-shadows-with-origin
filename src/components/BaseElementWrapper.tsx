@@ -1,16 +1,18 @@
 import { styled } from '@linaria/react';
 import { useCallback, useRef, useState } from 'preact/hooks';
+import { useMemo } from 'react';
 
-import { BaseElementProps, Position, useStoreItem } from '../store';
+import { Position, useStoreItem } from '../store';
 import { createStyle } from './utils';
 
-type Props = BaseElementProps & {
+type Props = {
+  id: number;
   className?: string;
   children: (isDragging: boolean) => JSX.Element;
 };
 
 export function BaseElementWrapper(props: Props): JSX.Element {
-  const { setHeight, updateItem } = useStoreItem(props.id);
+  const { setHeight, updateItem, item } = useStoreItem(props.id);
   const [isDragging, setIsDragging] = useState(false);
 
   const updateHeight = useCallback(
@@ -24,25 +26,46 @@ export function BaseElementWrapper(props: Props): JSX.Element {
 
   const setPosition = useCallback(
     (position: Position): void => {
-      const [prevLeft, prevTop] = props.position;
+      if (!item) {
+        return;
+      }
+      const [prevLeft, prevTop] = item.position;
       const [diffLeft, diffTop] = position;
       const newPosition: Position = [prevLeft + diffLeft, prevTop + diffTop];
       updateItem({ position: newPosition });
     },
-    [updateItem, props.position],
+    [updateItem, item],
   );
 
+  const startDragging = useCallback(() => {
+    setIsDragging(true);
+  }, [setIsDragging]);
+
+  const endDragging = useCallback(() => {
+    setIsDragging(false);
+  }, [setIsDragging]);
+
   const registerDrag = useDrag({
-    onStart: () => setIsDragging(true),
+    onStart: startDragging,
     onMove: setPosition,
-    onEnd: () => setIsDragging(false),
+    onEnd: endDragging,
+    id: props.id,
   });
+
+  const style = useMemo(() => {
+    if (!item) {
+      return;
+    }
+    return createStyle(item);
+  }, [item]);
 
   return (
     <>
       <Wrapper
+        id={String(props.id)}
+        title={String(props.id)}
         className={props.className}
-        style={createStyle(props)}
+        style={style}
         onWheel={updateHeight}
         {...registerDrag}
       >
@@ -60,6 +83,7 @@ function useDrag<T extends HTMLElement>(params?: {
   onStart?: () => void;
   onMove: (positionDiff: Position) => void;
   onEnd?: () => void;
+  id: number;
 }): {
   onMouseDown: JSX.EventHandler<JSX.TargetedMouseEvent<T>>;
   onMouseMove: JSX.EventHandler<JSX.TargetedMouseEvent<T>>;
@@ -71,6 +95,7 @@ function useDrag<T extends HTMLElement>(params?: {
     (event: JSX.TargetedMouseEvent<T>) => {
       persisted.current.start = [event.clientX, event.clientY];
       persisted.current.isDragging = true;
+
       params?.onStart?.();
     },
     [params],
@@ -82,7 +107,6 @@ function useDrag<T extends HTMLElement>(params?: {
       if (!isDragging || !start) {
         return;
       }
-
       const [left, top] = [event.clientX, event.clientY];
       const [startLeft, startTop] = start;
       const diff: Position = [left - startLeft, top - startTop];
@@ -92,13 +116,10 @@ function useDrag<T extends HTMLElement>(params?: {
     [params],
   );
 
-  const onMouseUp = useCallback(
-    (event: JSX.TargetedMouseEvent<T>) => {
-      persisted.current = { isDragging: false };
-      params?.onEnd?.();
-    },
-    [params],
-  );
+  const onMouseUp = useCallback(() => {
+    persisted.current = {};
+    params?.onEnd?.();
+  }, [params]);
 
   return { onMouseDown, onMouseMove, onMouseUp };
 }

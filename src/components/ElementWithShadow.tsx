@@ -6,17 +6,24 @@ import { PageObjectType, useStoreItem } from '../store';
 import { useLightOriginRef } from '../use-light-origin';
 import { BaseElementWrapper } from './BaseElementWrapper';
 
-export const ElementWithShadow: FunctionComponent<PageObjectType> = (props) => {
-  const { dimensions, height, id } = props;
+export const ElementWithShadow: FunctionComponent<{ id: number }> = ({ id }) => {
+  const { item, deleteItem } = useStoreItem<PageObjectType>(id);
   const elementRef = useLightOriginRef<HTMLButtonElement>();
 
-  const { deleteItem } = useStoreItem(id);
+  if (!item) {
+    return null;
+  }
 
   return (
-    <BaseElementWrapper {...props}>
+    <BaseElementWrapper id={id}>
       {(isDragging): JSX.Element => (
-        <Button ref={elementRef} dimensions={dimensions} isDragged={isDragging}>
-          {height}
+        <Button
+          ref={elementRef}
+          dimensions={item.dimensions}
+          isDragged={isDragging}
+          onClick={deleteItem}
+        >
+          {item.height}
         </Button>
       )}
     </BaseElementWrapper>
@@ -32,4 +39,5 @@ const Button = styled.button<{ dimensions: number[]; isDragged: boolean }>`
   justify-content: center;
   align-items: center;
   background-color: ${({ isDragged }): string => (isDragged ? '#f1f1f184s' : 'white')};
+  cursor: ${({ isDragged }): string => (isDragged ? 'grab' : 'pointer')};
 `;

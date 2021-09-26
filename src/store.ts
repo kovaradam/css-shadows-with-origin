@@ -1,15 +1,17 @@
 import { useCallback } from 'preact/hooks';
 import create, { SetState } from 'zustand';
 
+import { setOrigins } from './lib';
+
 export type Position = [x: number, y: number];
 
-export type BaseElementProps = {
+export type BaseItem = {
   position: Position;
   height: number;
   id: number;
 };
 
-export type LightOriginType = BaseElementProps;
+export type LightOriginType = BaseItem;
 
 const idGenerator = (function* (): Generator<number> {
   for (let i = 0; true; i++) {
@@ -29,7 +31,7 @@ const defaultOriginValue: LightOriginType[] = [
   },
 ];
 
-export type PageObjectType = BaseElementProps & {
+export type PageObjectType = BaseItem & {
   dimensions: [width: number, height: number];
 };
 
@@ -58,25 +60,34 @@ export const useStore = create<Store>((set) => ({
   setState: set,
 }));
 
-export function useStoreItem(id: number): {
+export function useStoreItem<T extends BaseItem>(
+  id: number,
+): {
   setHeight: (heightUpdate: number) => void;
-  updateItem: (update: Partial<BaseElementProps>) => void;
+  updateItem: (update: Partial<T>) => void;
   deleteItem: () => void;
+  item: T | null;
 } {
-  const setState = useStore((s) => s.setState);
+  const [setState, item] = useStore((s) => [
+    s.setState,
+    (s.items.find((item) => item.id === id) as T) ?? null,
+  ]);
 
   const updateStoreWithItem = useCallback(
-    (item: BaseElementProps, state: Store): Store => {
+    (item: BaseItem, state: Store): Store => {
       const newItems = state.items.filter((origin) => origin.id !== id).concat(item);
+      if (isLightOrigin(item)) {
+        setOrigins(newItems.filter(isLightOrigin));
+      }
       return { ...state, items: newItems };
     },
     [id],
   );
 
   const getItem = useCallback(
-    (state: Store): BaseElementProps | null => {
+    (state: Store): T | null => {
       const item = state.items.find((origin) => origin.id === id);
-      return item ?? null;
+      return (item as T) ?? null;
     },
     [id],
   );
@@ -99,7 +110,7 @@ export function useStoreItem(id: number): {
   );
 
   const updateItem = useCallback(
-    (update: Partial<BaseElementProps>): void => {
+    (update: Partial<BaseItem>): void => {
       setState((prev) => {
         let item = getItem(prev);
         if (!item) {
@@ -121,17 +132,21 @@ export function useStoreItem(id: number): {
     });
   }, [setState, id]);
 
-  return { setHeight, deleteItem, updateItem };
+  return { setHeight, deleteItem, updateItem, item };
 }
 
 function isLightOrigin(item: LightOriginType | PageObjectType): boolean {
   return (item as PageObjectType).dimensions === undefined;
 }
 
-export function lightOriginsSelector(state: Store): LightOriginType[] {
-  return state.items.filter(isLightOrigin);
+export function lightOriginIdsSelector(state: Store): number[] {
+  return state.items.filter(isLightOrigin).map(({ id }) => id);
 }
 
-export function pageObjectsSelector(state: Store): PageObjectType[] {
-  return state.items.filter((item) => !isLightOrigin(item)) as PageObjectType[];
+export function pageObjectIdsSelector(state: Store): number[] {
+  return state.items.filter((item) => !isLightOrigin(item)).map(({ id }) => id);
+}
+
+export function lightOriginsSelector(state: Store): LightOriginType[] {
+  return state.items.filter(isLightOrigin);
 }

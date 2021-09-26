@@ -2,7 +2,8 @@ import { RefObject } from 'preact';
 
 import { useEffect, useRef } from 'react';
 
-import { useStore, LightOriginType, Position, lightOriginsSelector } from './store';
+import { addShadow } from './lib';
+import { LightOriginType, Position } from './store';
 
 export function useLightOriginRef<T extends HTMLElement>(): RefObject<T> {
   const elementRef = useRef<T>(null);
@@ -12,25 +13,20 @@ export function useLightOriginRef<T extends HTMLElement>(): RefObject<T> {
 }
 
 export function useLightOrigin<T extends HTMLElement>(elementRef: RefObject<T>): void {
-  const lightOrigins = useStore(lightOriginsSelector);
-
   useEffect(() => {
     const element = elementRef.current;
     if (!element) {
       return;
     }
-    const [color, blur, spread] = ['#0000001a', 5, 5];
-
-    lightOrigins.forEach((origin) => {
-      element.style.boxShadow = `${createShadowOffset(
-        origin,
-        element,
-      )} ${blur}px ${spread}px ${color}`;
-    });
-  }, [elementRef, lightOrigins]);
+    const unsub = addShadow(element);
+    return unsub;
+  }, [elementRef]);
 }
 
-function createShadowOffset(origin: LightOriginType, element: HTMLElement): string {
+export function createShadowOffset(
+  origin: LightOriginType,
+  element: HTMLElement,
+): string {
   const elementRect = element.getBoundingClientRect();
   const shadowDirection = getShadowDirection(origin, elementRect);
 

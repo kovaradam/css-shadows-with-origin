@@ -2,15 +2,19 @@ import { FunctionComponent } from 'preact';
 
 import { styled } from '@linaria/react';
 
-import { LightOriginType } from '../store';
+import { useStoreItem } from '../store';
 import { BaseElementWrapper } from './BaseElementWrapper';
 
-export const LightOrigin: FunctionComponent<LightOriginType> = (props) => {
+export const LightOrigin: FunctionComponent<{ id: number }> = ({ id }) => {
+  const { item } = useStoreItem(id);
+
+  if (!item) {
+    return null;
+  }
+
   return (
-    <BaseElementWrapper {...props}>
-      {(isDragging): JSX.Element => (
-        <Button isDragged={isDragging}>{props.height}</Button>
-      )}
+    <BaseElementWrapper id={item.id}>
+      {(isDragging): JSX.Element => <Button isDragged={isDragging}>{item.height}</Button>}
     </BaseElementWrapper>
   );
 };
@@ -23,5 +27,6 @@ const Button = styled.button<{ isDragged: boolean }>`
   justify-content: center;
   align-items: center;
   box-shadow: 0 0 20px 1px #efef01;
-  background-color: ${({ isDragged }): string => (isDragged ? '#f1f1f184s' : 'white')};
+  background-color: ${({ isDragged }): string => (isDragged ? '#ebebeb' : 'white')};
+  cursor: ${({ isDragged }): string => (isDragged ? 'grab' : 'pointer')};
 `;
