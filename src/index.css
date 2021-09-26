@@ -17,3 +17,9 @@ p {
   justify-content: center;
   align-items: center;
 }
+
+button {
+  background-color: white;
+  border: none;
+  cursor: pointer;
+}

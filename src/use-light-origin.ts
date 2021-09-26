@@ -1,9 +1,8 @@
 import { RefObject } from 'preact';
 
-import { useAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
 
-import { lightOriginAtom, LightOriginType, Position } from './store';
+import { useStore, LightOriginType, Position, lightOriginsSelector } from './store';
 
 export function useLightOriginRef<T extends HTMLElement>(): RefObject<T> {
   const elementRef = useRef<T>(null);
@@ -13,7 +12,7 @@ export function useLightOriginRef<T extends HTMLElement>(): RefObject<T> {
 }
 
 export function useLightOrigin<T extends HTMLElement>(elementRef: RefObject<T>): void {
-  const [lightOrigins] = useAtom(lightOriginAtom);
+  const lightOrigins = useStore(lightOriginsSelector);
 
   useEffect(() => {
     const element = elementRef.current;
