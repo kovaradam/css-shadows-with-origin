@@ -1,6 +1,6 @@
 import { styled } from '@linaria/react';
+import { forwardRef } from 'preact/compat';
 import { useCallback, useRef, useState } from 'preact/hooks';
-import { useMemo } from 'react';
 
 import { Position, useStoreItem } from '../store';
 import { createStyle } from './utils';
@@ -11,7 +11,7 @@ type Props = {
   children: (isDragging: boolean) => JSX.Element;
 };
 
-export function BaseElementWrapper(props: Props): JSX.Element {
+export const BaseElementWrapper = forwardRef<HTMLDivElement, Props>((props, ref) => {
   const { setHeight, updateItem, item } = useStoreItem(props.id);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -49,15 +49,14 @@ export function BaseElementWrapper(props: Props): JSX.Element {
     onStart: startDragging,
     onMove: setPosition,
     onEnd: endDragging,
-    id: props.id,
   });
 
-  const style = useMemo(() => {
+  const style = ((): JSX.CSSProperties | undefined => {
     if (!item) {
       return;
     }
     return createStyle(item);
-  }, [item]);
+  })();
 
   return (
     <>
@@ -67,23 +66,24 @@ export function BaseElementWrapper(props: Props): JSX.Element {
         className={props.className}
         style={style}
         onWheel={updateHeight}
+        ref={ref}
         {...registerDrag}
       >
         {props.children(isDragging)}
       </Wrapper>
     </>
   );
-}
+});
 
 const Wrapper = styled.div`
   position: absolute;
+  border-radius: 5px;
 `;
 
 function useDrag<T extends HTMLElement>(params?: {
   onStart?: () => void;
   onMove: (positionDiff: Position) => void;
   onEnd?: () => void;
-  id: number;
 }): {
   onMouseDown: JSX.EventHandler<JSX.TargetedMouseEvent<T>>;
   onMouseMove: JSX.EventHandler<JSX.TargetedMouseEvent<T>>;

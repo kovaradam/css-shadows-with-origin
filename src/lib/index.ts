@@ -13,6 +13,7 @@ export const setOrigins: typeof Store.setOrigins = (origins) => {
 class Store {
   static lightOrigins: LightOriginType[] = [];
   static listeners: HTMLElement[] = [];
+  static observer: MutationObserver;
 
   private static update = (): void => {
     Store.listeners.forEach(Store.updateElement);
@@ -29,9 +30,24 @@ class Store {
     });
   }
 
+  private static observeElement = (element: HTMLElement): void => {
+    if (!Store.observer) {
+      Store.observer = new MutationObserver((mutation) => {
+        mutation.forEach((mutationRecord) => {
+          const element = mutationRecord.target as HTMLElement;
+          Store.updateElement(element);
+        });
+      });
+    }
+
+    Store.observer.observe(element, { attributes: true });
+  };
+
   public static subscribe(element: HTMLElement): () => void {
     Store.listeners.push(element);
     Store.updateElement(element);
+    Store.observeElement(element);
+
     return (): void => {
       Store.listeners = Store.listeners.filter(
         (storeElement) => storeElement !== element,

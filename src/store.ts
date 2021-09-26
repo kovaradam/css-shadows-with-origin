@@ -30,7 +30,7 @@ const defaultOriginValue: LightOriginType[] = [
     id: createId(),
   },
 ];
-
+setOrigins(defaultOriginValue);
 export type PageObjectType = BaseItem & {
   dimensions: [width: number, height: number];
 };

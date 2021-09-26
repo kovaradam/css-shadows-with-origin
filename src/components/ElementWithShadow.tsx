@@ -8,20 +8,19 @@ import { BaseElementWrapper } from './BaseElementWrapper';
 
 export const ElementWithShadow: FunctionComponent<{ id: number }> = ({ id }) => {
   const { item, deleteItem } = useStoreItem<PageObjectType>(id);
-  const elementRef = useLightOriginRef<HTMLButtonElement>();
+  const elementRef = useLightOriginRef<HTMLDivElement>();
 
   if (!item) {
     return null;
   }
 
   return (
-    <BaseElementWrapper id={id}>
+    <BaseElementWrapper id={id} ref={elementRef}>
       {(isDragging): JSX.Element => (
         <Button
-          ref={elementRef}
           dimensions={item.dimensions}
           isDragged={isDragging}
-          onClick={deleteItem}
+          onDblClick={deleteItem}
         >
           {item.height}
         </Button>
@@ -31,7 +30,6 @@ export const ElementWithShadow: FunctionComponent<{ id: number }> = ({ id }) => 
 };
 
 const Button = styled.button<{ dimensions: number[]; isDragged: boolean }>`
-  border-radius: 5px;
   border: 1px solid pink;
   width: ${({ dimensions }): number => dimensions[0]}px;
   height: ${({ dimensions }): number => dimensions[1]}px;
