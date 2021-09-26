@@ -1,13 +1,36 @@
 import { atom } from 'jotai';
 
-type LightOrigin = {
-  position: [x: number, y: number];
+export type Position = [x: number, y: number];
+
+type BaseElementProps = {
+  position: Position;
   height: number;
 };
 
-const defaultValue: LightOrigin = {
+export type LightOriginType = BaseElementProps;
+
+const defaultOriginValue: LightOriginType = {
   position: [50, 50],
-  height: 5,
+  height: 50,
 };
 
-export const lightOriginAtom = atom<LightOrigin[]>([defaultValue]);
+export const lightOriginAtom = atom<LightOriginType[]>([defaultOriginValue]);
+
+export type PageObjectType = BaseElementProps & {
+  dimensions: [width: number, height: number];
+};
+
+const defaultPageObjectValue: PageObjectType[] = [
+  {
+    position: [250, 250],
+    dimensions: [100, 100],
+    height: 10,
+  },
+  {
+    position: [400, 150],
+    dimensions: [100, 60],
+    height: 80,
+  },
+];
+
+export const pageObjectAtom = atom<PageObjectType[]>(defaultPageObjectValue);
