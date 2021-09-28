@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "preview": "vite preview",
+    "serve": "npm run build && npx surge ./dist css-shadows-with-origin.surge.sh"
   },
   "dependencies": {
     "@types/react": "^17.0.24",
