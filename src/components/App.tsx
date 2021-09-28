@@ -1,6 +1,7 @@
 import { FunctionComponent } from 'preact';
 
 import { lightOriginIdsSelector, pageObjectIdsSelector, useStore } from '../store';
+import { Background } from './Background';
 import { ElementWithShadow } from './ElementWithShadow';
 import { LightOrigin } from './LightOrigin';
 
@@ -11,7 +12,7 @@ export const App: FunctionComponent = () => {
   ]);
 
   return (
-    <>
+    <Background>
       <p>css shadows with origin</p>
 
       {pageObjects.map((id) => (
@@ -21,6 +22,6 @@ export const App: FunctionComponent = () => {
       {lightOrigins.map((id) => (
         <LightOrigin key={id} id={id} />
       ))}
-    </>
+    </Background>
   );
 };

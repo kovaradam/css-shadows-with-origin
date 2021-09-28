@@ -10,6 +10,17 @@ export const setOrigins: typeof Store.setOrigins = (origins) => {
   return Store.setOrigins(origins);
 };
 
+function createShadow(
+  origin: LightOriginType,
+  element: HTMLElement,
+  shadowProps?: { blur: number; spread: number; color: string },
+): string {
+  shadowProps ??= { color: '#0000001a', blur: 5, spread: 5 };
+  return `${createShadowOffset(origin, element)} ${shadowProps.blur}px ${
+    shadowProps.spread
+  }px ${shadowProps.color}`;
+}
+
 class Store {
   static lightOrigins: LightOriginType[] = [];
   static listeners: HTMLElement[] = [];
@@ -20,14 +31,10 @@ class Store {
   };
 
   private static updateElement(element: HTMLElement): void {
-    const [color, blur, spread] = ['#0000001a', 5, 5];
-
-    Store.lightOrigins.forEach((origin) => {
-      element.style.boxShadow = `${createShadowOffset(
-        origin,
-        element,
-      )} ${blur}px ${spread}px ${color}`;
-    });
+    const shadow = Store.lightOrigins
+      .map((origin) => createShadow(origin, element))
+      .reduce((prev, current) => `${prev}, ${current}`);
+    element.style.boxShadow = shadow;
   }
 
   private static observeElement = (element: HTMLElement): void => {

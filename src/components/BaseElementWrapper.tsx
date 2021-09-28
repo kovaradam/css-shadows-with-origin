@@ -1,9 +1,9 @@
 import { styled } from '@linaria/react';
 import { forwardRef } from 'preact/compat';
-import { useCallback, useRef, useState } from 'preact/hooks';
+import { useCallback, useState } from 'preact/hooks';
 
 import { Position, useStoreItem } from '../store';
-import { createStyle } from './utils';
+import { createStyle, useDrag } from './utils';
 
 type Props = {
   id: number;
@@ -79,47 +79,3 @@ const Wrapper = styled.div`
   position: absolute;
   border-radius: 5px;
 `;
-
-function useDrag<T extends HTMLElement>(params?: {
-  onStart?: () => void;
-  onMove: (positionDiff: Position) => void;
-  onEnd?: () => void;
-}): {
-  onMouseDown: JSX.EventHandler<JSX.TargetedMouseEvent<T>>;
-  onMouseMove: JSX.EventHandler<JSX.TargetedMouseEvent<T>>;
-  onMouseUp: JSX.EventHandler<JSX.TargetedMouseEvent<T>>;
-} {
-  const persisted = useRef<{ start?: Position; isDragging?: boolean }>({});
-
-  const onMouseDown = useCallback(
-    (event: JSX.TargetedMouseEvent<T>) => {
-      persisted.current.start = [event.clientX, event.clientY];
-      persisted.current.isDragging = true;
-
-      params?.onStart?.();
-    },
-    [params],
-  );
-
-  const onMouseMove = useCallback(
-    (event: JSX.TargetedMouseEvent<T>) => {
-      const { start, isDragging } = persisted.current;
-      if (!isDragging || !start) {
-        return;
-      }
-      const [left, top] = [event.clientX, event.clientY];
-      const [startLeft, startTop] = start;
-      const diff: Position = [left - startLeft, top - startTop];
-      persisted.current.start = [left, top];
-      params?.onMove(diff);
-    },
-    [params],
-  );
-
-  const onMouseUp = useCallback(() => {
-    persisted.current = {};
-    params?.onEnd?.();
-  }, [params]);
-
-  return { onMouseDown, onMouseMove, onMouseUp };
-}

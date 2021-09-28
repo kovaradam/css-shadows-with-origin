@@ -29,8 +29,15 @@ const defaultOriginValue: LightOriginType[] = [
     height: 50,
     id: createId(),
   },
+  {
+    position: [250, 50],
+    height: 10,
+    id: createId(),
+  },
 ];
+
 setOrigins(defaultOriginValue);
+
 export type PageObjectType = BaseItem & {
   dimensions: [width: number, height: number];
 };
@@ -149,4 +156,10 @@ export function pageObjectIdsSelector(state: Store): number[] {
 
 export function lightOriginsSelector(state: Store): LightOriginType[] {
   return state.items.filter(isLightOrigin);
+}
+
+export function createStoreItem(
+  item: Omit<LightOriginType | PageObjectType, 'id'>,
+): BaseItem {
+  return { ...item, id: createId() };
 }
