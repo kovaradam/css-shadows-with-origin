@@ -1,6 +1,12 @@
 import { FunctionComponent } from 'preact';
 
-import { lightOriginIdsSelector, pageObjectIdsSelector, useStore } from '../store';
+import { setOrigins } from '../lib';
+import {
+  lightOriginIdsSelector,
+  lightOriginsSelector,
+  pageObjectIdsSelector,
+  useStore,
+} from '../store';
 import { Background } from './Background';
 import { ElementWithShadow } from './ElementWithShadow';
 import { LightOrigin } from './LightOrigin';
@@ -25,3 +31,5 @@ export const App: FunctionComponent = () => {
     </Background>
   );
 };
+
+useStore.subscribe(setOrigins, lightOriginsSelector);

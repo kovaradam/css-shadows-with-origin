@@ -1,8 +1,8 @@
 import { FunctionComponent } from 'preact';
 
-import { styled } from '@linaria/react';
 import { useRef } from 'preact/hooks';
 import { useState } from 'react';
+import styled from 'styled-components';
 
 import { BaseItem, createStoreItem, Position, useStore } from '../store';
 import { useDrag } from './utils';
@@ -144,6 +144,8 @@ const S = {
     transform-origin: top left;
     border-radius: 6px;
     box-shadow: 0px 0px 4px 0px #cdcdcd;
+    background-color: white;
+    overflow: hidden;
     margin: 0;
     padding: 0;
     list-style: none;

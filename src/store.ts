@@ -83,9 +83,6 @@ export function useStoreItem<T extends BaseItem>(
   const updateStoreWithItem = useCallback(
     (item: BaseItem, state: Store): Store => {
       const newItems = state.items.filter((origin) => origin.id !== id).concat(item);
-      if (isLightOrigin(item)) {
-        setOrigins(newItems.filter(isLightOrigin));
-      }
       return { ...state, items: newItems };
     },
     [id],

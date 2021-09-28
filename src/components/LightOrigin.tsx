@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'preact';
 
-import { styled } from '@linaria/react';
+import styled from 'styled-components';
 
 import { useStoreItem } from '../store';
 import { BaseElementWrapper } from './BaseElementWrapper';

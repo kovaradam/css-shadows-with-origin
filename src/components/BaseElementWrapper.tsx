@@ -1,6 +1,6 @@
-import { styled } from '@linaria/react';
 import { forwardRef } from 'preact/compat';
 import { useCallback, useState } from 'preact/hooks';
+import styled from 'styled-components';
 
 import { Position, useStoreItem } from '../store';
 import { createStyle, useDrag } from './utils';
@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const BaseElementWrapper = forwardRef<HTMLDivElement, Props>((props, ref) => {
-  const { setHeight, updateItem, item } = useStoreItem(props.id);
+  const { setHeight, updateItem, item, deleteItem } = useStoreItem(props.id);
   const [isDragging, setIsDragging] = useState(false);
 
   const updateHeight = useCallback(
@@ -67,6 +67,7 @@ export const BaseElementWrapper = forwardRef<HTMLDivElement, Props>((props, ref)
         style={style}
         onWheel={updateHeight}
         ref={ref}
+        onDblClick={deleteItem}
         {...registerDrag}
       >
         {props.children(isDragging)}

@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'preact';
 
-import { styled } from '@linaria/react';
+import styled from 'styled-components';
 
 import { PageObjectType, useStoreItem } from '../store';
 import { useLightOriginRef } from '../use-light-origin';
@@ -36,6 +36,6 @@ const Button = styled.button<{ dimensions: number[]; isDragged: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: ${({ isDragged }): string => (isDragged ? '#f1f1f184s' : 'white')};
+  background-color: ${({ isDragged }): string => (isDragged ? '#f1f1f184' : 'white')};
   cursor: ${({ isDragged }): string => (isDragged ? 'grab' : 'pointer')};
 `;
