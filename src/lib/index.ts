@@ -31,6 +31,9 @@ class Store {
   };
 
   private static updateElement(element: HTMLElement): void {
+    if (!Store.lightOrigins.length) {
+      return;
+    }
     const shadow = Store.lightOrigins
       .map((origin) => createShadow(origin, element))
       .reduce((prev, current) => `${prev}, ${current}`);
@@ -86,27 +89,11 @@ function getShadowDirection(origin: LightOriginType, elementRect: DOMRect): Dire
   const [centerLeft, centerTop] = [left + (right - left) / 2, top + (bottom - top) / 2];
   const [originLeft, originTop] = origin.position;
 
-  const [shadowBorderLeft, shadowBorderTop] = ((): Position => {
-    if (originLeft <= centerLeft) {
-      if (originTop <= centerTop) {
-        return [right, bottom];
-      } else {
-        return [right, top];
-      }
-    } else {
-      if (originTop <= centerTop) {
-        return [left, bottom];
-      } else {
-        return [left, top];
-      }
-    }
-  })();
-
   const elementHeight = 1;
   const heightDiff = origin.height >= elementHeight ? origin.height - elementHeight : 0;
   const [ratioLeft, ratioTop] = [
-    (shadowBorderLeft - originLeft) / heightDiff,
-    (shadowBorderTop - originTop) / heightDiff,
+    (centerLeft - originLeft) / heightDiff,
+    (centerTop - originTop) / heightDiff,
   ];
 
   const area: ReturnType<typeof getShadowDirection> = [

@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'preact';
 
+import { FiPlus } from 'react-icons/fi';
 import styled from 'styled-components';
 
 import { PageObjectType, useStoreItem } from '../store';
@@ -17,25 +18,44 @@ export const ElementWithShadow: FunctionComponent<{ id: number }> = ({ id }) => 
   return (
     <BaseElementWrapper id={id} ref={elementRef}>
       {(isDragging): JSX.Element => (
-        <Button
-          dimensions={item.dimensions}
-          isDragged={isDragging}
-          onDblClick={deleteItem}
-        >
+        <S.Content dimensions={item.dimensions} isDragged={isDragging}>
+          <S.CloseButton onClick={deleteItem}>
+            <FiPlus />
+          </S.CloseButton>
           {item.height}
-        </Button>
+        </S.Content>
       )}
     </BaseElementWrapper>
   );
 };
 
-const Button = styled.button<{ dimensions: number[]; isDragged: boolean }>`
-  border: 1px solid pink;
-  width: ${({ dimensions }): number => dimensions[0]}px;
-  height: ${({ dimensions }): number => dimensions[1]}px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: ${({ isDragged }): string => (isDragged ? '#f1f1f184' : 'white')};
-  cursor: ${({ isDragged }): string => (isDragged ? 'grab' : 'pointer')};
-`;
+const S = {
+  Content: styled.button<{ dimensions: number[]; isDragged: boolean }>`
+    border: 1px solid pink;
+    width: ${({ dimensions }): number => dimensions[0]}px;
+    height: ${({ dimensions }): number => dimensions[1]}px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: ${({ isDragged }): string => (isDragged ? '#f1f1f184' : 'white')};
+    cursor: ${({ isDragged }): string => (isDragged ? 'grab' : 'pointer')};
+  `,
+  CloseButton: styled.button`
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 2px;
+    padding: 2px;
+    border-radius: 3px;
+    color: grey;
+
+    &:hover {
+      background-color: #e1e1e1;
+    }
+
+    & > svg {
+      transform: rotate(45deg);
+      vertical-align: middle;
+    }
+  `,
+};

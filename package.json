@@ -11,6 +11,7 @@
     "@types/react": "^17.0.24",
     "@types/styled-components": "^5.1.14",
     "preact": "^10.5.13",
+    "react-icons": "^4.2.0",
     "styled-components": "^5.3.1",
     "zustand": "^3.5.10"
   },
